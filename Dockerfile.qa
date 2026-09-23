@@ -1,6 +1,7 @@
 FROM node:24 AS builder
 COPY . /juice-shop
 WORKDIR /juice-shop
+RUN npm config set registry https://registry.npmmirror.com
 RUN npm install -g typescript@^6.0.3
 RUN npm install --omit=dev
 RUN npm dedupe --omit=dev
