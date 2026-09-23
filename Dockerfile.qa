@@ -1,0 +1,18 @@
+FROM node:24 AS builder
+COPY . /juice-shop
+WORKDIR /juice-shop
+RUN npm install -g typescript@^6.0.3
+RUN npm install --omit=dev
+RUN npm dedupe --omit=dev
+RUN rm -rf frontend/node_modules frontend/.angular frontend/src/assets
+RUN mkdir -p logs
+RUN chown -R 1000:1000 logs data frontend/dist ftp i18n
+RUN rm -f ftp/legal.md
+RUN rm -f i18n/*.json
+
+FROM node:24-bookworm-slim
+WORKDIR /juice-shop
+COPY --from=builder --chown=node:node /juice-shop .
+USER node
+EXPOSE 3000
+CMD ["node", "build/app.js"]
